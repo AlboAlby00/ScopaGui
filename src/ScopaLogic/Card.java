@@ -9,10 +9,12 @@ public class Card implements Comparable<Card> {
     private Suit suit;
 
 
+
     public Card(Value value, Suit suit){
 
         this.value = value;
         this.suit = suit;
+
 
     }
 

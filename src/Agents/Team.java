@@ -3,7 +3,8 @@ package Agents;
 public enum Team {
 
     TEAM1("Team 1"),
-    TEAM2("Team 2");
+    TEAM2("Team 2"),
+    TIE("Tie");
 
     private final String teamString;
 

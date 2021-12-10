@@ -15,6 +15,7 @@ public class AIPlayerPanel extends JPanel {
 
     private JLabel currentPlayerLabel;
     private JLabel aiSelectedCard;
+   // private JLabel aiTakenCard;
     private JButton aiActionButton;
 
     AIPlayerPanel(GameBackEnd game, ActionListener l){
@@ -26,6 +27,7 @@ public class AIPlayerPanel extends JPanel {
         InitializeAiSelectedCard();
         InitializeCurrentPlayerLabel();
         InitializeAiActionButton(l);
+        //InitializedAiTakenCard();
 
     }
 
@@ -59,5 +61,16 @@ public class AIPlayerPanel extends JPanel {
         add(this.aiActionButton);
     }
 
+    /*private void InitializedAiTakenCard(){
+        this.aiTakenCard = new JLabel();
+        this.aiTakenCard.setIcon( GuiCard.createBlackCard().getImage());
+        add(this.aiTakenCard);
+    }
+
+    public void setAiTakendCard(GuiCard card){
+        //remove(this.aiSelectedCard);
+        this.aiTakenCard.setIcon(card.getImage());
+    }
+*/
 
 }

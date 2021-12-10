@@ -16,12 +16,16 @@ public class ScopaGUI extends JFrame {
     private GameBackEnd game;
     private Timer timer;
 
+    private JMenuBar menuBar;
+    private JMenu menu;
 
-
+    private JMenuItem newGame;
+    private JMenuItem simulateGame;
 
 
     public ScopaGUI(){
         super();
+        InitializeMenu();
         this.game=new GameBackEnd();
         this.tablePanel=new TablePanel(this.game);
         this.aiPlayerPanel= new AIPlayerPanel(this.game, getAiPlayerButtonListener());
@@ -33,25 +37,26 @@ public class ScopaGUI extends JFrame {
         add(this.tablePanel,BorderLayout.CENTER);
         add(this.aiPlayerPanel,BorderLayout.SOUTH);
         setVisible(true);
-        setTimer();
+        //setTimer();
     }
-
 
     private void setTimer(){
         this.timer = new Timer(500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for(int i=3; i>0; i--){
-                    Player p = game.getPlayer(i);
+                if(!game.isOver()){
+                    for(int i=3; i>0; i--){
+                        Player p = game.getPlayer(i);
 
-                    if(game.getCurrentPlayer()==i){
-                        aiAction(p,i);
+                        if(game.getCurrentPlayer()==i){
+                            aiAction(p,i);
                         /*try{
                             Thread.sleep(2000);
                         }
                         catch (InterruptedException ex){
                             ex.printStackTrace();
                         }*/
+                        }
                     }
                 }
                 }
@@ -60,7 +65,6 @@ public class ScopaGUI extends JFrame {
     }
 
     private void aiAction(Player p, int i){
-        System.out.println("Player "+i+" is playing");
         int cardIndex = p.move();
         GuiCard selectedCard = game.selectCard(p,cardIndex);
         game.playerMove(p,cardIndex);
@@ -73,9 +77,11 @@ public class ScopaGUI extends JFrame {
         ActionListener l = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("pressed");
+                //System.out.println("pressed");
                 if(game.isOver()){
+                    game.emptyRemainingCardsFromTable();
                     game.calculatePoints();
+                    tablePanel.UpdateTable();
                     return;
                 }
                 if(game.getCurrentPlayer()!=0){
@@ -86,6 +92,52 @@ public class ScopaGUI extends JFrame {
             }
         };
         return l;
+    }
+
+    private void InitializeMenu(){
+        this.menuBar= new JMenuBar();
+        this.menu=new JMenu("Options");
+        this.newGame = new JMenuItem("New Game");
+        this.simulateGame = new JMenuItem("Simulate Game");
+        this.simulateGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int i=0;
+                cardPanel.disableAllButtons();
+                while(i<40){
+                    game.randomTurn();
+                    i++;
+                }
+                game.emptyRemainingCardsFromTable();
+                cardPanel.Update();
+                aiPlayerPanel.updateCurrentPlayer();
+                tablePanel.UpdateTable();
+                revalidate();
+                game.calculatePoints();
+                EndGameFrame ef = new EndGameFrame(game);
+            }
+        });
+        newGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                restartGame();
+            }
+        });
+        this.menu.add(this.newGame);
+        this.menu.add(this.simulateGame);
+        this.menuBar.add(this.menu);
+        setJMenuBar(this.menuBar);
+    }
+
+
+
+    private void restartGame(){
+        game.resetGame();
+        tablePanel.UpdateTable();
+        cardPanel.Update();
+        cardPanel.resetButtons();
+        aiPlayerPanel.updateCurrentPlayer();
+        revalidate();
     }
 
 

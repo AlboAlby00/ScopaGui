@@ -16,7 +16,7 @@ public class TablePanel extends JPanel{
     private GameBackEnd game;
 
     public TablePanel(GameBackEnd game){
-        setBackground(Color.GREEN);
+        setBackground(Color.BLACK);
         setLayout(new FlowLayout());
         this.game=game;
         InitializeTable();
@@ -39,8 +39,10 @@ public class TablePanel extends JPanel{
     }
 
     public void UpdateTable(){
-        System.out.println("update Table");
+        //System.out.println("update Table");
         ClearTable();
         InitializeTable();
     }
+
+
 }

@@ -17,9 +17,11 @@ public class GameBackEnd {
     private List<GuiCard> table;
     private final Map<Team,PlayerDeck> teamDeck;
     private int currentPlayer;
+    private Team lastTeamTaker;
 
 
     public GameBackEnd(){
+        this.lastTeamTaker=Team.TEAM1;
         //initialize deck
         this.scopaDeck = new Deck();
         this.scopaDeck.fill(true);
@@ -42,15 +44,29 @@ public class GameBackEnd {
         }
     }
 
+    public void resetGame(){
+        this.table.clear();
+        this.teamDeck.get(Team.TEAM1).clear();
+        this.teamDeck.get(Team.TEAM2).clear();
+        this.scopaDeck=new Deck();
+        this.scopaDeck.fill(true);
+        for(Player p : this.playerArray){
+            p.fillHand(this.scopaDeck);
+        }
+
+
+    }
+
     public Player getPlayer(int i){
         return this.playerArray[i];
     }
 
     public boolean isOver(){
         GuiCard blackCard= GuiCard.createBlackCard();
-        for(GuiCard c : getPlayer(1).getHand()){
+        for(int i=0; i<4;i++){
+        for(GuiCard c : getPlayer(i).getHand()){
             if(!c.equals(blackCard)) return false;
-        }
+        }}
         return true;
     }
 
@@ -69,6 +85,7 @@ public class GameBackEnd {
         //System.out.println("move");
         if(cardFromHand.getValue()==Value.ACE){
             cardFound=true;
+            this.lastTeamTaker=pl.getTeam();
             for(GuiCard cardFromTable : this.table){
                 deck.insert(cardFromTable);
             }
@@ -79,9 +96,13 @@ public class GameBackEnd {
             for(GuiCard cardFromTable : this.table){
                 if(cardFromHand.getValue()==cardFromTable.getValue()) {
                     cardFound=true;
+                    this.lastTeamTaker=pl.getTeam();
                     deck.insert(cardFromTable);
                     deck.insert(cardFromHand);
                     this.table.remove(cardFromTable);
+                    if(this.table.isEmpty()){
+                        this.teamDeck.get(pl.getTeam()).scopa();
+                    }
                     break;
                 }
             }
@@ -90,6 +111,10 @@ public class GameBackEnd {
             table.add(cardFromHand);
         }
         this.togglePlayer();
+    }
+
+    public PlayerDeck getTeamDeck(Team team){
+        return this.teamDeck.get(team);
     }
 
     private void togglePlayer(){
@@ -104,8 +129,53 @@ public class GameBackEnd {
         int scoreTeam1=ScopaTeamDeckRanker.punteggio(this.teamDeck.get(Team.TEAM1));
         int scoreTeam2=ScopaTeamDeckRanker.punteggio(this.teamDeck.get(Team.TEAM2));
         if(scoreTeam2<scoreTeam1){
-            System.out.println("Team 1 is winner "+"\nTeam 1 score: "+scoreTeam1+"\nTeam 2 score: "+scoreTeam1);
+            System.out.println("Team 1 is winner "+"\nTeam 1 score: "+scoreTeam1+"\nTeam 2 score: "+scoreTeam2);
+            System.out.println("Team 1 deck:");
+            this.teamDeck.get(Team.TEAM1).printDeck();
+            System.out.println("Team 2 deck:");
+            this.teamDeck.get(Team.TEAM2).printDeck();
         }
-        else System.out.println("Team 2 is winner "+"\nTeam 1 score: "+scoreTeam1+"\nTeam 2 score: "+scoreTeam1);
+        else{
+            if(scoreTeam2==scoreTeam1){
+                System.out.println("It's a tie "+"\nTeam 1 score: "+scoreTeam1+"\nTeam 2 score: "+scoreTeam2);
+                System.out.println("Team 1 deck:");
+                this.teamDeck.get(Team.TEAM1).printDeck();
+                System.out.println("Team 2 deck:");
+                this.teamDeck.get(Team.TEAM2).printDeck();
+            }
+            else {System.out.println("Team 2 is winner "+"\nTeam 1 score: "+scoreTeam1+"\nTeam 2 score: "+scoreTeam2);
+                System.out.println("Team 1 deck:");
+                this.teamDeck.get(Team.TEAM1).printDeck();
+                System.out.println("Team 2 deck:");
+                this.teamDeck.get(Team.TEAM2).printDeck();}
+    }}
+
+    public void emptyRemainingCardsFromTable(){
+        Deck deck = this.teamDeck.get(this.lastTeamTaker);
+        for(GuiCard c : this.table){
+            deck.insert(c);
+        }
+        this.table.clear();
+    }
+
+    public Team getWinnerTeam(){
+        if(isOver()){
+            int scoreTeam1=ScopaTeamDeckRanker.punteggio(this.teamDeck.get(Team.TEAM1));
+            int scoreTeam2=ScopaTeamDeckRanker.punteggio(this.teamDeck.get(Team.TEAM2));
+            if(scoreTeam2<scoreTeam1) return Team.TEAM1;
+            else{
+                if(scoreTeam2==scoreTeam1)
+                    return Team.TIE;
+                else return Team.TEAM2;
+            }}
+        return null;
+        }
+
+    public void randomTurn(){
+            System.out.println(currentPlayer);
+            Player p = getPlayer(currentPlayer);
+            playerMove(p,p.randomMove());
+
+
     }
 }

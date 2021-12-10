@@ -3,7 +3,9 @@ package Agents;
 import GUI.GuiCard;
 import ScopaLogic.Deck;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class Player {
 
@@ -46,10 +48,27 @@ public class Player {
 
     }
 
+
     public int move(){
         return 0;
     }
 
+    public int randomMove(){
+        Random generator = new Random();
+        ArrayList<GuiCard> actualCards = new ArrayList<>();
+        GuiCard blackCard= GuiCard.createBlackCard();
+        for(int i = 0; i< 10; i++){
+            if(!this.hand[i].equals(blackCard)){
+                actualCards.add(this.hand[i]);
+            }
+        }
+        GuiCard c = actualCards.get(generator.nextInt(actualCards.size()));
+        for(int i=0; i<10;i++){
+            if(this.hand[i].equals(c))
+                return i;
+        }
+        return 0;
+    }
 
     public void orderHand(){
         Arrays.sort(this.hand);

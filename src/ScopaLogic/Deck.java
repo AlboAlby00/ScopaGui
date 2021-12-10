@@ -7,7 +7,7 @@ import java.util.Stack;
 
 public class Deck {
     
-    private Stack<GuiCard> deckStack;
+    protected Stack<GuiCard> deckStack;
 
     public Deck(){
         deckStack=new Stack<>();
@@ -27,6 +27,10 @@ public class Deck {
         shuffle();
     }
 
+    public void clear(){
+        this.deckStack.clear();
+    }
+
     public GuiCard extract(){
         return this.deckStack.pop();
     }
@@ -39,5 +43,11 @@ public class Deck {
 
     boolean isEmpty(){
         return this.deckStack.size()==0;
+    }
+
+    void printDeck(){
+        for(GuiCard c : this.deckStack){
+            System.out.print(c.toString()+",");
+        }
     }
 }

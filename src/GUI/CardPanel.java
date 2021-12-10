@@ -1,5 +1,6 @@
 package GUI;
 
+import Agents.Team;
 import ScopaLogic.GameBackEnd;
 
 import javax.swing.*;
@@ -17,6 +18,8 @@ public class CardPanel extends JPanel implements ActionListener {
     private GameBackEnd game;
     private TablePanel tablePanel;
     private AIPlayerPanel aiPlayerPanel;
+
+
 
     public CardPanel(GameBackEnd game,TablePanel tablePanel,AIPlayerPanel aiPlayerPanel){
         super();
@@ -53,7 +56,12 @@ public class CardPanel extends JPanel implements ActionListener {
         }
     }
 
-    private void UpdateCards(GuiCard[] cardArray){
+    public void Update(){
+        UpdateCards(this.game.getPlayer(this.game.getCurrentPlayer()).getHand());
+
+    }
+
+    public void UpdateCards(GuiCard[] cardArray){
         for(int i=0; i<10;i++){
             remove(this.cardLabel[i]);
             GuiCard c = cardArray[i];
@@ -61,6 +69,19 @@ public class CardPanel extends JPanel implements ActionListener {
             l.setIcon(c.getImage());
             this.cardLabel[i]=l;
             add(l);
+        }
+    }
+
+    public void resetButtons(){
+        for(JButton b : this.cardButton){
+            b.setEnabled(true);
+            b.setOpaque(false);
+        }
+    }
+
+    public void disableAllButtons(){
+        for(JButton b:this.cardButton){
+            b.setEnabled(false);
         }
     }
 
@@ -73,7 +94,6 @@ public class CardPanel extends JPanel implements ActionListener {
             if(e.getSource()==b&&game.getCurrentPlayer()==0){
                 b.setEnabled(false);
                 b.setOpaque(true);
-                b.setIcon(GuiCard.createBlackCard().getImage());
                 game.playerMove(game.getPlayer(0),i);
                 //game.getMainPlayer().printHand();
                 UpdateCards(game.getPlayer(0).getHand());
